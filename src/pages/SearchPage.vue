@@ -9,14 +9,22 @@
           placeholder="Search for food..."
           class="p-2 border rounded w-full"
       />
-      <button @click="searchFood" class="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg">
+      <button @click="search" class="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg">
         Search
       </button>
     </div>
 
+    <div class="mt-4 text-center">
+      <div v-if="loading" class="text-blue-400">Searching…</div>
+
+      <div v-if="error" class="text-red-400">
+        {{ error }}
+      </div>
+    </div>
+
     <div class="mt-6">
       <FoodCard
-          v-for="food in foods"
+          v-for="food in results"
           :key="food.name"
           :food="food"
       />
@@ -26,37 +34,44 @@
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import FoodItem from "../models/FoodItem";
-import Nutrients from "../models/Nutrients";
+import FoodService from "../services/FoodService";
 import FoodCard from "../components/FoodCard.vue";
+import type FoodItem from "../models/FoodItem.ts";
 
 export default defineComponent({
   name: "SearchPage",
   components: { FoodCard },
+
   setup() {
     const query = ref("");
-    const foods = ref<FoodItem[]>([]);
+    const results = ref<FoodItem[]>([]);
+    const loading = ref(false);
+    const error = ref("");
 
-    const searchFood = async () => {
-      const apiKey = import.meta.env.VITE_USDA_API_KEY;
-      const res = await fetch(
-          `https://api.nal.usda.gov/fdc/v1/foods/search?query=${query.value}&api_key=${apiKey}`
-      );
-      const data = await res.json();
+    const service = new FoodService();
 
-      // Map JSON to FoodItem objects
-      foods.value = data.foods.slice(0, 5).map((item: any) => {
-        const nutrients = new Nutrients(
-            item.foodNutrients.find((n: any) => n.nutrientId === 1008)?.value || 0,
-            item.foodNutrients.find((n: any) => n.nutrientId === 1003)?.value || 0,
-            item.foodNutrients.find((n: any) => n.nutrientId === 1005)?.value || 0,
-            item.foodNutrients.find((n: any) => n.nutrientId === 2000)?.value || 0
-        );
-        return new FoodItem(item.description, nutrients);
-      });
+    const search = async () => {
+      loading.value = true;
+      error.value = "";
+      results.value = [];
+
+      try {
+        results.value = await service.searchFoods(query.value);
+      } catch (err: any) {
+        error.value = err.message || "Something went wrong.";
+      } finally {
+        loading.value = false;
+      }
     };
 
-    return { query, foods, searchFood };
+    return {
+      query,
+      results,
+      loading,
+      error,
+      search
+    };
   }
 });
 </script>
+
