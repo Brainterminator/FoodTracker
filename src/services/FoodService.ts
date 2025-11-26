@@ -32,7 +32,8 @@ export default class FoodService {
                 f.foodNutrients?.find((n: any) => n.nutrientName === "Energy")?.value ?? 0,
                 f.foodNutrients?.find((n: any) => n.nutrientName === "Protein")?.value ?? 0,
                 f.foodNutrients?.find((n: any) => n.nutrientName === "Carbohydrate, by difference")?.value ?? 0,
-                f.foodNutrients?.find((n: any) => n.nutrientName === "Sugars, total including NLEA")?.value ?? 0
+                f.foodNutrients?.find((n: any) => /sugar/i.test(n.nutrientName))?.value ?? 0,
+                f.foodNutrients?.find((n: any) => /fat/i.test(n.nutrientName))?.value ?? 0
             );
 
             return new FoodItem(f.description, nutrients);

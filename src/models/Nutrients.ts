@@ -1,13 +1,20 @@
 export default class Nutrients {
-    calories: number;
-    protein: number;
-    carbs: number;
-    sugars: number;
+    constructor(
+        public calories: number,
+        public protein: number,
+        public carbs: number,
+        public sugars: number,
+        public fat: number = 0
+    ) {}
 
-    constructor(calories: number, protein: number, carbs: number, sugars: number) {
-        this.calories = calories;
-        this.protein = protein;
-        this.carbs = carbs;
-        this.sugars = sugars;
+    scaled(amountGrams: number): Nutrients {
+        const factor = amountGrams / 100;
+        return new Nutrients(
+            this.calories * factor,
+            this.protein * factor,
+            this.carbs * factor,
+            this.sugars * factor,
+            this.fat * factor
+        );
     }
 }
