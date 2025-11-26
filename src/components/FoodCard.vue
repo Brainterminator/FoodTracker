@@ -58,7 +58,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import type FoodItem from "../models/FoodItem";
+import FoodItem from "../models/FoodItem";
 import { useMealsStore } from "../store/meals";
 
 const props = defineProps<{ food: FoodItem }>();
@@ -84,7 +84,7 @@ const dialGradient = computed(() => {
   const p1 = (props.food.nutrients.protein / total) * 100;
   const p2 = (props.food.nutrients.carbs / total) * 100;
   const p3 = (props.food.nutrients.fat / total) * 100;
-  const p4 = (props.food.nutrients.sugars / total) * 100;
+  //const p4 = (props.food.nutrients.sugars / total) * 100; TODO: WHAT'S WRONG HERE?
 
   return `conic-gradient(
     #22c55e 0 ${p1}%,
@@ -96,10 +96,7 @@ const dialGradient = computed(() => {
 
 const addMeal = () => {
   if (amount.value <= 0) return;
-  mealsStore.addMeal({
-    ...props.food,
-    nutrients: scaledNutrients.value,
-  });
+  mealsStore.addMeal(new FoodItem(props.food.name, scaledNutrients.value));
   amount.value = 0;
 };
 </script>
