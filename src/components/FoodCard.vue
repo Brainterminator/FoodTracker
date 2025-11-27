@@ -99,7 +99,7 @@ const dialGradient = computed(() => {
 
 const addMeal = () => {
   if (amount.value <= 0) return;
-  mealsStore.addMeal(new FoodItem(props.food.name, scaledNutrients.value));
+  mealsStore.addMeal(new FoodItem(props.food.name, scaledNutrients.value), amount.value);
   amount.value = 0;
 };
 </script>
