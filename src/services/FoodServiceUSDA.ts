@@ -1,7 +1,7 @@
 import FoodItem from "../models/FoodItem";
 import Nutrients from "../models/Nutrients";
 
-export default class FoodService {
+export default class FoodServiceUSDA {
     private apiKey: string;
 
     constructor() {
@@ -36,7 +36,7 @@ export default class FoodService {
                 f.foodNutrients?.find((n: any) => /fat/i.test(n.nutrientName))?.value ?? 0
             );
 
-            return new FoodItem(f.description, nutrients);
+            return new FoodItem(f.description, nutrients, "usda");
         });
     }
 }

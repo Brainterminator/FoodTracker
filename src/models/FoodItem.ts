@@ -3,10 +3,12 @@ import Nutrients from "./Nutrients";
 export default class FoodItem {
     name: string;
     nutrients: Nutrients;
+    source: "usda" | "off";
 
-    constructor(name: string, nutrients: Nutrients) {
+    constructor(name: string, nutrients: Nutrients, source: "usda" | "off" = "usda") {
         this.name = name;
         this.nutrients = nutrients;
+        this.source = source;
     }
 
     // Example helper

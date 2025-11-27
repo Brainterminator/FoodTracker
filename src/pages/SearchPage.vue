@@ -36,21 +36,39 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 import FoodCard from "../components/FoodCard.vue";
-import FoodService from "../services/FoodService";
+import FoodServiceUSDA from "../services/FoodServiceUSDA.ts";
 import type FoodItem from "../models/FoodItem";
+import FoodServiceOFF from "../services/FoodServiceOFF.ts";
 
 const query = ref("");
 const results = ref<FoodItem[]>([]);
 const loading = ref(false);
 const error = ref("");
-const service = new FoodService();
+const serviceUSDA = new FoodServiceUSDA();
+const serviceOFF = new FoodServiceOFF();
 
 const search = async () => {
+  const term = query.value.trim();
+  if (!term) return;
+
   loading.value = true;
   error.value = "";
   results.value = [];
+
   try {
-    results.value = await service.searchFoods(query.value);
+    const [usda, off] = await Promise.allSettled([
+      serviceUSDA.searchFoods(term),
+      serviceOFF.searchFoods(term),
+    ]);
+
+    const combined: FoodItem[] = [];
+
+    if (usda.status === "fulfilled") combined.push(...usda.value);
+    if (off.status === "fulfilled") combined.push(...off.value);
+
+    // remove duplicates (by name)
+    const unique = new Map(combined.map((f) => [f.name.toLowerCase(), f]));
+    results.value = Array.from(unique.values());
   } catch (err: any) {
     error.value = err.message || "Something went wrong.";
   } finally {

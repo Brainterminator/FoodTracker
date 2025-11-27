@@ -1,5 +1,8 @@
 <template>
-  <div class="bg-gray-800 rounded-xl p-4 flex flex-col sm:flex-row items-center gap-4 shadow">
+  <div class="bg-gray-800 rounded-xl p-4 flex flex-col sm:flex-row items-center gap-4 shadow relative">
+
+    <div class="text-sm text-gray-400 mb-3 absolute top-2 right-3">{{ food.source.toUpperCase() }}</div>
+
     <!-- Dial -->
     <div
         class="w-24 h-24 rounded-full shrink-0"
